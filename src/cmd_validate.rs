@@ -30,6 +30,7 @@ impl ValidateConfig for ValidateArgs {
         Ok(BuildExtended {
             build: Build {
                 build_log_url: None,
+                builder_id: None,
             },
             build_refs: vec![],
         })

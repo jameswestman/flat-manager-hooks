@@ -215,7 +215,7 @@ pub fn rewrite_appstream_xml(
                         true
                     } else if key.to_lowercase().starts_with("flathub::build::") && build.is_none()
                     {
-                        /* On republishes, preserve the previous build log URL */
+                        /* On republishes, preserve the previous build information */
                         true
                     } else {
                         changed = true;
@@ -328,7 +328,7 @@ pub fn rewrite_appstream_xml(
         );
     }
 
-    // Add build log tags
+    // Add build tags
     if let Some(build) = build {
         if let Some(build_log_url) = &build.build.build_log_url {
             set_value(
@@ -336,6 +336,7 @@ pub fn rewrite_appstream_xml(
                 Some(build_log_url.as_str()),
             );
         }
+
         if let Some(build_ref_log_url) = &build
             .build_refs
             .iter()
@@ -346,6 +347,10 @@ pub fn rewrite_appstream_xml(
                 "flathub::build::build_ref_log_url",
                 Some(build_ref_log_url.as_str()),
             );
+        }
+
+        if build.build.builder_id == Some("buildbot".to_owned()) {
+            set_value("flathub::build::built_by_flathub", Some("true"));
         }
     }
 
@@ -477,6 +482,7 @@ mod tests {
             &Some(BuildExtended {
                 build: Build {
                     build_log_url: Some("https://example.com".to_string()),
+                    builder_id: Some("buildbot".to_string()),
                 },
                 build_refs: vec![],
             }),
@@ -496,6 +502,7 @@ mod tests {
         <value key="flathub::verification::website">example.com</value>
         <value key="flathub::verification::login_is_organization">false</value>
         <value key="flathub::build::build_log_url">https://example.com</value>
+        <value key="flathub::build::built_by_flathub">true</value>
     </metadata>
 </component>
 </components>"#,
@@ -526,6 +533,7 @@ mod tests {
             &Some(BuildExtended {
                 build: Build {
                     build_log_url: None,
+                    builder_id: Some("not_buildbot".to_string()),
                 },
                 build_refs: vec![
                     BuildRef {
@@ -564,7 +572,8 @@ mod tests {
         <id>org.flatpak.Test</id>
         <metadata>
             <value key="flathub::pricing::recommended_donation">1</value>
-            <value key="flathub::build_log_url">https://example.com</value>
+            <value key="flathub::build::build_log_url">https://example.com</value>
+            <value key="flathub::build::built_by_flathub">true</value>
         </metadata>
     </component>
 </components>"#;
@@ -584,6 +593,7 @@ mod tests {
             &Some(BuildExtended {
                 build: Build {
                     build_log_url: None,
+                    builder_id: None,
                 },
                 build_refs: vec![],
             }),

@@ -9,6 +9,7 @@ pub struct BuildExtended {
 #[derive(Deserialize)]
 pub struct Build {
     pub build_log_url: Option<String>,
+    pub builder_id: Option<String>,
 }
 
 #[derive(Deserialize)]
