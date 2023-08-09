@@ -23,7 +23,6 @@ pub struct BuildRef {
 pub enum CheckStatus {
     ReviewRequired(String),
     Failed(String),
-    PassedWithWarnings(String),
     Pending,
 }
 
